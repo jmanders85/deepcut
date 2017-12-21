@@ -7,7 +7,7 @@ const _flatten = require('lodash/flatten')
 
 const START_DATE = '2017-12-01'
 const END_DATE = '2017-12-31'
-const NUMBER_OF_GAMES_TO_LIST = 20
+const NUMBER_OF_GAMES_TO_LIST = 12
 
 const THROTTLE = 2000 // BGG API is rate limited, this number seems to be the fastest I can get away with
 
@@ -101,11 +101,13 @@ function getRestOfMembersAndWriteFile(memberCount, latestJoin, first25Members) {
 }
 
 function getMemberPlaysForMonth(memberList) {
+  const numberOfMembers = memberList.length
+
   series(
     memberList.map((member, i) => {
       return cb => {
         setTimeout(() => {
-          console.log('Fetching plays for', member, 'Number', i + 1, 'of', memberList.length)
+          console.log('Fetching plays for', member, 'Number', i + 1, 'of', numberOfMembers)
           https.get(PLAYS_URI(member), memberResult => {
             let body = ''
 
@@ -207,12 +209,34 @@ function getMemberPlaysForMonth(memberList) {
 
       console.log('\nFor the period', START_DATE, 'to', END_DATE, ':')
 
+      const longest = gameNames.slice(0, NUMBER_OF_GAMES_TO_LIST).reduce((a, e) => {
+        const nameLength = e.length
+        const gamePlays = numberLength(gamesPlayed[e].quantity)
+
+        return {
+          gameName: nameLength > a.gameName ? nameLength : a.gameName,
+          plays: gamePlays > a.plays ? gamePlays : a.plays,
+        }
+      }, {
+        gameName: 0,
+        plays: 0,
+      });
+
+      const longestMembers = numberLength(gamesPlayed[gameNames[0]].members.length)
+
       _range(0, NUMBER_OF_GAMES_TO_LIST).forEach(i => {
         const game = gameNames[i]
-        console.log(`${i + 1}. ${game} played by ${gamesPlayed[game].members.length} members ${gamesPlayed[game].quantity} times`)
+        const { quantity } = gamesPlayed[game]
+        const members = gamesPlayed[game].members.length
+        console.log(
+          `${i < 9 ? ' ' : ''}${i + 1}. ${game}${' '.repeat(longest.gameName - game.length)} played by ${' '.repeat(longestMembers - numberLength(members))}${members} members ${' '.repeat(longest.plays - numberLength(quantity))}${quantity} times`)
       })
 
-      console.log('\n', memebersWithNoPlaysThisPeriod, 'with no recorded plays')
+      console.log('\n', numberOfMembers - memebersWithNoPlaysThisPeriod, 'members with recorded plays')
     }
   )
+}
+
+function numberLength(number) {
+  return Math.floor(Math.log10(number)) + 1
 }
