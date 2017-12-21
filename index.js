@@ -214,22 +214,22 @@ function getMemberPlaysForMonth(memberList) {
         const gamePlays = numberLength(gamesPlayed[e].quantity)
 
         return {
+          ...a,
           gameName: nameLength > a.gameName ? nameLength : a.gameName,
           plays: gamePlays > a.plays ? gamePlays : a.plays,
         }
       }, {
         gameName: 0,
+        members: numberLength(gamesPlayed[gameNames[0]].members.length),
         plays: 0,
       });
-
-      const longestMembers = numberLength(gamesPlayed[gameNames[0]].members.length)
 
       _range(0, NUMBER_OF_GAMES_TO_LIST).forEach(i => {
         const game = gameNames[i]
         const { quantity } = gamesPlayed[game]
         const members = gamesPlayed[game].members.length
         console.log(
-          `${i < 9 ? ' ' : ''}${i + 1}. ${game}${' '.repeat(longest.gameName - game.length)} played by ${' '.repeat(longestMembers - numberLength(members))}${members} members ${' '.repeat(longest.plays - numberLength(quantity))}${quantity} times`)
+          `${i < 9 ? ' ' : ''}${i + 1}. ${game}${' '.repeat(longest.gameName - game.length)} played by ${' '.repeat(longest.members - numberLength(members))}${members} members ${' '.repeat(longest.plays - numberLength(quantity))}${quantity} times`)
       })
 
       console.log('\n', numberOfMembers - memebersWithNoPlaysThisPeriod, 'members with recorded plays')
