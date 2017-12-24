@@ -207,7 +207,7 @@ function getMemberPlaysForMonth(memberList) {
         return 1
       })
 
-      console.log('\nFor the period', START_DATE, 'to', END_DATE, ':')
+      console.log(`\nFor the period ${START_DATE} to ${END_DATE}:`)
 
       const longest = gameNames.slice(0, NUMBER_OF_GAMES_TO_LIST).reduce((a, e) => {
         const nameLength = e.length
@@ -232,7 +232,7 @@ function getMemberPlaysForMonth(memberList) {
           `${i < 9 ? ' ' : ''}${i + 1}. ${game}${' '.repeat(longest.gameName - game.length)} played by ${' '.repeat(longest.members - numberLength(members))}${members} members ${' '.repeat(longest.plays - numberLength(quantity))}${quantity} times`)
       })
 
-      console.log('\n', numberOfMembers - memebersWithNoPlaysThisPeriod, 'members with recorded plays')
+      console.log(`\n${numberOfMembers - memebersWithNoPlaysThisPeriod} members with recorded plays`)
     }
   )
 }
